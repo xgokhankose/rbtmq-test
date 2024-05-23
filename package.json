@@ -1,0 +1,21 @@
+{
+  "name": "rabbitmqtest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-recieve": "node recieve.js && node send.js",
+    "test-queue": "node worker.js",
+    "test-subscribe": "node subscribe/subscribe.js",
+    "test-routing": "node routing/routing.js",
+    "test-routing-receive": "node routing/routingReceive.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.10.4"
+  }
+}
