@@ -1,12 +1,12 @@
 // send.js
-const amqp = require("amqplib");
+import { connect } from "amqplib";
 
 async function send() {
   const queue = "hello";
   const message = "Hello World!";
 
   try {
-    const connection = await amqp.connect("amqp://localhost");
+    const connection = await connect("amqp://localhost");
     const channel = await connection.createChannel();
 
     await channel.assertQueue(queue, {
