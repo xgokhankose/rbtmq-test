@@ -1,4 +1,88 @@
-import { connect } from "amqplib";
+import { connect } from 'amqplib';
+import { v4 as uuidv4 } from 'uuid';
+
+const args = process.argv.slice(2);
+
+if (args.length === 0) {
+    console.log("Usage: rpc_client.js num");
+    process.exit(1);
+}
+
+async function fibonacciRpc(num) {
+    try {
+        // Connect to RabbitMQ server
+        const connection = await connect('amqp://localhost');
+        // Create a channel
+        const channel = await connection.createChannel();
+
+        const replyQueue = await channel.assertQueue('', { exclusive: true });
+        const correlationId = uuidv4();
+
+        console.log(' [x] Requesting fib(%d)', num);
+
+        // Set up a consumer on the reply queue
+        channel.consume(replyQueue.queue, (msg) => {
+            if (msg.properties.correlationId === correlationId) {
+                console.log(' [.] Got %s', msg.content.toString());
+                setTimeout(() => {
+                    connection.close();
+                    process.exit(0);
+                }, 500);
+            }
+        }, { noAck: true });
+
+        // Send the RPC request
+        channel.sendToQueue('rpc_queue', Buffer.from(num.toString()), {
+            correlationId: correlationId,
+            replyTo: replyQueue.queue,
+        });
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+const num = parseInt(args[0], 10);
+fibonacciRpc(num);
+
+
+/* import { connect } from 'amqplib';
+import { v4 as uuidv4 } from 'uuid';
+
+async function fibonacciRpc(n) {
+    try {
+        const connection = await connect('amqp://localhost');
+        const channel = await connection.createChannel();
+
+        const queue = 'rpc_queue';
+        const replyQueue = await channel.assertQueue('', { exclusive: true });
+
+        const correlationId = uuidv4();
+
+        channel.consume(replyQueue.queue, (msg) => {
+            if (msg.properties.correlationId === correlationId) {
+                console.log(' [.] Got %s', msg.content.toString());
+                setTimeout(() => {
+                    connection.close();
+                    process.exit(0);
+                }, 500);
+            }
+        }, { noAck: true });
+
+        channel.sendToQueue(queue, Buffer.from(n.toString()), {
+            correlationId,
+            replyTo: replyQueue.queue,
+        });
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+const num = parseInt(process.argv[2], 10) || 10;
+console.log(' [x] Requesting fib(%d)', num);
+fibonacciRpc(num);
+ */
+
+/* import { connect } from "amqplib";
 
 var args = process.argv.slice(2);
 
@@ -60,3 +144,4 @@ function generateUuid() {
     Math.random().toString()
   );
 }
+ */

@@ -1,28 +1,66 @@
-import { connect } from "amqplib";
+/* import { connect } from 'amqplib';
 
-connect("amqp://localhost", function (error0, connection) {
-  if (error0) {
-    throw error0;
-  }
-  connection.createChannel(function (error1, channel) {
-    if (error1) {
-      throw error1;
+async function publishMessage() {
+    try {
+        // Connect to RabbitMQ server
+        const connection = await connect('amqp://localhost');
+        // Create a channel
+        const channel = await connection.createChannel();
+
+        const exchange = 'logs';
+        const msg = 'Hello World!';
+
+        // Declare exchange
+        await channel.assertExchange(exchange, 'fanout', { durable: false });
+
+        // Publish message to exchange
+        channel.publish(exchange, '', Buffer.from(msg));
+        console.log(" [x] Sent %s", msg);
+
+        // Close the connection after a short delay to ensure message is sent
+        setTimeout(() => {
+            connection.close();
+        }, 500);
+    } catch (error) {
+        console.error('Error:', error);
     }
-    var exchange = "logs";
-    var msg = process.argv.slice(2).join(" ") || "Hello World!";
+}
 
-    channel.assertExchange(exchange, "fanout", {
-      durable: false,
-    });
-    channel.publish(exchange, "", Buffer.from(msg));
-    console.log(" [x] Sent %s", msg);
-  });
+publishMessage(); */
 
-  setTimeout(function () {
-    connection.close();
-    process.exit(0);
-  }, 500);
-});
+
+import { connect } from 'amqplib';
+
+async function publishMessage() {
+    try {
+        // Connect to RabbitMQ server
+        const connection = await connect('amqp://localhost');
+        // Create a channel
+        const channel = await connection.createChannel();
+
+        const exchange = 'logs';
+        const msg = process.argv.slice(2).join(' ') || 'Hello World!';
+
+        // Declare exchange
+        await channel.assertExchange(exchange, 'fanout', { durable: false });
+
+        // Publish message to exchange
+        channel.publish(exchange, '', Buffer.from(msg));
+        console.log(" [x] Sent %s", msg);
+
+        // Close the connection after a short delay to ensure message is sent
+        setTimeout(() => {
+            connection.close();
+            process.exit(0);
+        }, 500);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+publishMessage();
+
+
 
 /* function publish() {
   console.log("girdi1");
