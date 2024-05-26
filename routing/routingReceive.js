@@ -11,27 +11,27 @@ if (args.length === 0) {
 
 async function receiveLogs() {
     try {
-        // Connect to RabbitMQ server
+        // RabbitMQ sunucusuna bağlan
         const connection = await connect('amqp://localhost');
-        // Create a channel
+        // Bir kanal oluştur
         const channel = await connection.createChannel();
 
         const exchange = 'direct_logs';
 
-        // Declare exchange
+        // Exchange'i tanımla
         await channel.assertExchange(exchange, 'direct', { durable: false });
 
-        // Declare a temporary queue
+        // Geçici bir kuyruk tanımla
         const q = await channel.assertQueue('', { exclusive: true });
 
-        console.log(' [*] Waiting for logs. To exit press CTRL+C');
+        console.log(' [*] Logları bekliyor. Çıkmak için CTRL+C tuşlayın');
 
-        // Bind the queue to the exchange with the given severities
+        // Kuyruğu belirtilen severity seviyeleriyle exchange'e bağla
         args.forEach(function(severity) {
           channel.bindQueue(q.queue, exchange, severity);
         });
 
-        // Consume messages from the queue
+        // Kuyruktan mesajları tüket
         channel.consume(q.queue, (msg) => {
             console.log(" [x] %s: '%s'", msg.fields.routingKey, msg.content.toString());
         }, { noAck: true });
@@ -42,6 +42,7 @@ async function receiveLogs() {
 }
 
 receiveLogs();
+
 
 
 

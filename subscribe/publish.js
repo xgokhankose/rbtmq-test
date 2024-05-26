@@ -33,22 +33,22 @@ import { connect } from 'amqplib';
 
 async function publishMessage() {
     try {
-        // Connect to RabbitMQ server
+        // RabbitMQ sunucusuna bağlan
         const connection = await connect('amqp://localhost');
-        // Create a channel
+        // Kanal oluştur
         const channel = await connection.createChannel();
 
         const exchange = 'logs';
         const msg = process.argv.slice(2).join(' ') || 'Hello World!';
 
-        // Declare exchange
+        // Exchange tanımla
         await channel.assertExchange(exchange, 'fanout', { durable: false });
 
-        // Publish message to exchange
+        // Mesajı exchange'e yayınla
         channel.publish(exchange, '', Buffer.from(msg));
         console.log(" [x] Sent %s", msg);
 
-        // Close the connection after a short delay to ensure message is sent
+        // Mesajın gönderildiğinden emin olmak için kısa bir gecikme sonra bağlantıyı kapat
         setTimeout(() => {
             connection.close();
             process.exit(0);

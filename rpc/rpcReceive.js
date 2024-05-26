@@ -10,17 +10,18 @@ if (args.length === 0) {
 
 async function fibonacciRpc(num) {
     try {
-        // Connect to RabbitMQ server
+        // RabbitMQ sunucusuna bağlan
         const connection = await connect('amqp://localhost');
-        // Create a channel
+        // Kanal oluştur
         const channel = await connection.createChannel();
 
+        // Geçici bir cevap kuyruğu oluştur
         const replyQueue = await channel.assertQueue('', { exclusive: true });
         const correlationId = uuidv4();
 
         console.log(' [x] Requesting fib(%d)', num);
 
-        // Set up a consumer on the reply queue
+        // Cevap kuyruğunda bir tüketici ayarla
         channel.consume(replyQueue.queue, (msg) => {
             if (msg.properties.correlationId === correlationId) {
                 console.log(' [.] Got %s', msg.content.toString());
@@ -31,7 +32,7 @@ async function fibonacciRpc(num) {
             }
         }, { noAck: true });
 
-        // Send the RPC request
+        // RPC isteği gönder
         channel.sendToQueue('rpc_queue', Buffer.from(num.toString()), {
             correlationId: correlationId,
             replyTo: replyQueue.queue,
@@ -43,6 +44,7 @@ async function fibonacciRpc(num) {
 
 const num = parseInt(args[0], 10);
 fibonacciRpc(num);
+
 
 
 /* import { connect } from 'amqplib';
