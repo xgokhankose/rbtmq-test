@@ -1,9 +1,9 @@
-#!/usr/bin/env node
-
 import { connect } from 'amqplib';
 
+// Komut satırından alınan argümanları değişkene ata
 const args = process.argv.slice(2);
 
+// Eğer argümanlar boşsa, kullanım bilgisini yazdır ve çık
 if (args.length === 0) {
     console.log("Usage: receive_logs_topic.js <facility>.<severity>");
     process.exit(1);
@@ -11,27 +11,27 @@ if (args.length === 0) {
 
 async function receiveLogs() {
     try {
-        // Connect to RabbitMQ server
+        // RabbitMQ sunucusuna bağlan
         const connection = await connect('amqp://localhost');
-        // Create a channel
+        // Bir kanal oluştur
         const channel = await connection.createChannel();
 
         const exchange = 'topic_logs';
 
-        // Declare exchange
+        // Exchange oluştur
         await channel.assertExchange(exchange, 'topic', { durable: false });
 
-        // Declare a temporary queue
+        // Geçici bir kuyruk oluştur
         const q = await channel.assertQueue('', { exclusive: true });
 
         console.log(' [*] Waiting for logs. To exit press CTRL+C');
 
-        // Bind the queue to the exchange with the given routing keys
+        // Kuyruğu verilen routing key'ler ile exchange'e bağla
         for (const key of args) {
             await channel.bindQueue(q.queue, exchange, key);
         }
 
-        // Consume messages from the queue
+        // Kuyruktan mesajları tüket
         channel.consume(q.queue, (msg) => {
             console.log(" [x] %s:'%s'", msg.fields.routingKey, msg.content.toString());
         }, { noAck: true });
@@ -42,6 +42,7 @@ async function receiveLogs() {
 }
 
 receiveLogs();
+
 
 
 /* import { connect } from "amqplib";
