@@ -1,34 +1,3 @@
-/* import { connect } from 'amqplib';
-
-async function publishMessage() {
-    try {
-        // Connect to RabbitMQ server
-        const connection = await connect('amqp://localhost');
-        // Create a channel
-        const channel = await connection.createChannel();
-
-        const exchange = 'logs';
-        const msg = 'Hello World!';
-
-        // Declare exchange
-        await channel.assertExchange(exchange, 'fanout', { durable: false });
-
-        // Publish message to exchange
-        channel.publish(exchange, '', Buffer.from(msg));
-        console.log(" [x] Sent %s", msg);
-
-        // Close the connection after a short delay to ensure message is sent
-        setTimeout(() => {
-            connection.close();
-        }, 500);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-publishMessage(); */
-
-
 import { connect } from 'amqplib';
 
 async function publishMessage() {

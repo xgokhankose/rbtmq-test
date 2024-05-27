@@ -14,8 +14,7 @@ async function send() {
     // Bağlantı üzerinden bir kanal oluştur
     const channel = await connection.createChannel();
 
-    // Belirtilen kuyruk adına sahip bir kuyruk oluştur (eğer yoksa)
-    // durable: false, kuyruğun kalıcı olmadığını belirtir
+    // Belirtilen kuyruk adına sahip bir kuyruk oluştur
     await channel.assertQueue(queue, {
       durable: false,
     });
