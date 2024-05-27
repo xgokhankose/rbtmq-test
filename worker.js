@@ -1,7 +1,6 @@
 // amqplib modülünden 'connect' fonksiyonunu içe aktar
 import { connect } from "amqplib";
 
-// 'receive' adlı asenkron fonksiyon tanımla
 async function receive() {
   // Kullanılacak kuyruk adını tanımla
   var queue = "task_queue";

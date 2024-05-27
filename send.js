@@ -1,8 +1,5 @@
-// send.js
-// amqplib modülünden 'connect' fonksiyonunu içe aktar
 import { connect } from "amqplib";
 
-// Asenkron bir fonksiyon olan 'send'i tanımla
 async function send() {
   // Kuyruk adı ve gönderilecek mesajı tanımla
   const queue = "hello";
